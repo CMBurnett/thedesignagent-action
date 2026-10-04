@@ -1,5 +1,5 @@
-name: TheDesignAgent design review
-description: Score the UI pages a pull request changed for UX and visual quality, comment the results on the PR, and fail below a threshold.
+name: TheDesignAgent Review
+description: Score the UI pages a pull request changed for UX and visual quality.
 author: TheDesignAgent
 branding:
   icon: eye

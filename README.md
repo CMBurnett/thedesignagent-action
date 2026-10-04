@@ -72,7 +72,7 @@ To see what a run would cover without reviewing anything, run `npx -y --package=
 | `vercel-bypass-secret` | none | For protected Vercel previews. Sent only to the preview's own domain |
 | `comment` | `true` | Post and update one PR comment |
 | `base` | the PR's base branch | Git ref to diff against |
-| `version` | `0.4` | Version of `@thedesignagent/mcp` to run |
+| `version` | `0.5` | Version of `@thedesignagent/mcp` to run |
 
 ## Exit codes
 

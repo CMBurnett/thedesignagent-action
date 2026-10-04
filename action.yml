@@ -36,7 +36,7 @@ inputs:
   version:
     description: Version of @thedesignagent/mcp to run.
     required: false
-    default: '0.4'
+    default: '0.5'
 
 runs:
   using: composite

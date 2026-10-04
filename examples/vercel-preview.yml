@@ -1,0 +1,24 @@
+# Review the pages a pull request changed, on its Vercel preview deploy.
+name: Design review
+
+on:
+  deployment_status:
+
+jobs:
+  design-review:
+    # Successful preview deploys only, not production.
+    if: github.event.deployment_status.state == 'success' && !contains(github.event.deployment_status.environment, 'Production')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+          fetch-depth: 0
+      - uses: CMBurnett/thedesignagent-action@v1
+        with:
+          api-key: ${{ secrets.THEDESIGNAGENT_API_KEY }}
+          vercel-bypass-secret: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          threshold: 6

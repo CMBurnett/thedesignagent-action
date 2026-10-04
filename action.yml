@@ -1,0 +1,66 @@
+name: TheDesignAgent design review
+description: Score the UI pages a pull request changed for UX and visual quality, comment the results on the PR, and fail below a threshold.
+author: TheDesignAgent
+branding:
+  icon: eye
+  color: gray-dark
+
+inputs:
+  api-key:
+    description: Your TheDesignAgent API key (starts with tda_). Store it as a repository secret.
+    required: true
+  base-url:
+    description: Where the pages live, such as a preview deploy. Defaults to the preview URL from a deployment_status event, then check.base_url in .thedesignagent.
+    required: false
+    default: ''
+  checks:
+    description: Which reviews to run on each page, comma-separated (ux, visual).
+    required: false
+    default: ux,visual
+  threshold:
+    description: Fail the run if any page scores below this (0-10). Leave empty to report without failing.
+    required: false
+    default: ''
+  vercel-bypass-secret:
+    description: Vercel "Protection Bypass for Automation" secret, for protected preview deploys. Sent only to the preview's own domain.
+    required: false
+    default: ''
+  comment:
+    description: Post the results as one PR comment, updated on every run.
+    required: false
+    default: 'true'
+  base:
+    description: Git ref to diff against when finding changed pages. Defaults to the pull request's base branch.
+    required: false
+    default: ''
+  version:
+    description: Version of @thedesignagent/mcp to run.
+    required: false
+    default: '0.4'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Design review of changed pages
+      shell: bash
+      env:
+        THEDESIGNAGENT_API_KEY: ${{ inputs.api-key }}
+        VERCEL_AUTOMATION_BYPASS_SECRET: ${{ inputs.vercel-bypass-secret }}
+        GITHUB_TOKEN: ${{ github.token }}
+        INPUT_BASE_URL: ${{ inputs.base-url }}
+        INPUT_CHECKS: ${{ inputs.checks }}
+        INPUT_THRESHOLD: ${{ inputs.threshold }}
+        INPUT_COMMENT: ${{ inputs.comment }}
+        INPUT_BASE: ${{ inputs.base }}
+        INPUT_VERSION: ${{ inputs.version }}
+      run: |
+        args=(check --changed --checks "$INPUT_CHECKS")
+        [ -n "$INPUT_BASE_URL" ] && args+=(--base-url "$INPUT_BASE_URL")
+        [ -n "$INPUT_THRESHOLD" ] && args+=(--threshold "$INPUT_THRESHOLD")
+        [ -n "$INPUT_BASE" ] && args+=(--base "$INPUT_BASE")
+        [ "$INPUT_COMMENT" = "true" ] && args+=(--pr-comment)
+        npx -y --package="@thedesignagent/mcp@${INPUT_VERSION}" thedesignagent "${args[@]}"

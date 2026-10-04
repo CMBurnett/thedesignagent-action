@@ -1,0 +1,22 @@
+# Review changed pages on every pull request, against a preview URL you know
+# (or check.base_url in .thedesignagent).
+name: Design review
+
+on:
+  pull_request:
+
+jobs:
+  design-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: CMBurnett/thedesignagent-action@v1
+        with:
+          api-key: ${{ secrets.THEDESIGNAGENT_API_KEY }}
+          base-url: https://staging.example.com
+          threshold: 6
